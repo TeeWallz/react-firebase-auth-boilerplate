@@ -11,6 +11,7 @@ export function SignInSection() {
         links = (
             <>
             <div className={'menu_button'}><Link to="/dashboard">Dashboard</Link></div>
+                <div className={'menu_button'}><Link to="/supabasefeatures">Supabase Features</Link></div>
                 <div className={'menu_button'}><Link to="/profile">Profile</Link></div>
                 <div className={'menu_button'}><Link to="/logout">Log Out</Link></div>
                 <img className={'avatar'} src={user?.user_metadata.avatar_url}></img>

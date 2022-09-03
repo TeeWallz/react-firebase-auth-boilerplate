@@ -5,6 +5,7 @@ import { Signup } from './Signup'
 import { Login } from './Login'
 import { Logout } from './Logout'
 import { Frontpage } from './Frontpage'
+import { SupabaseFeatures } from './SupabaseFeatures'
 import { Profile } from './Profile'
 import { ForgottenPassword } from './ForgottenPassword'
 import { ResetPassword } from './ResetPassword'
@@ -25,6 +26,7 @@ export function App() {
             <Route exact path="/" component={Frontpage} />
             <PrivateRoute path="/dashboard" component={Dashboard} />
             <PrivateRoute path="/profile" component={Profile} />
+            <PrivateRoute path="/supabasefeatures" component={SupabaseFeatures} />
             <Route path="/signup" component={Signup} />
             <Route path="/login" component={Login} />
             <Route path="/logout" component={Logout} />
