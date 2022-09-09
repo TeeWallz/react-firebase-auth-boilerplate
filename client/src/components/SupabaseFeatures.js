@@ -27,8 +27,10 @@ export function SupabaseFeatures() {
 
 
     // Get signUp function from the auth context
-    const { user } = useAuth()
+    const { user, update } = useAuth()
     const history = useHistory()
+
+
 
     // Add Feature Stuff
     async function handleAddSubmit(e) {
@@ -55,7 +57,11 @@ export function SupabaseFeatures() {
 
 
 
-    // Message stuff
+    ///////////////////////////////////////////////////////
+    /////////////////// MESSAGE STUFF /////////////////////
+    ///////////////////////////////////////////////////////
+
+
     // On load, reload all messages
     async function getMessages() {
         let { data: message_data, error } = await supabase
@@ -168,6 +174,48 @@ export function SupabaseFeatures() {
 
     }
 
+
+
+    ///////////////////////////////////////////////////////
+    ////////////////////// FILE STUFF /////////////////////
+    ///////////////////////////////////////////////////////
+    async function handlAvatarSubmit(e) {
+        e.preventDefault();
+
+        // let newMessage = newMessageRef.current.value
+        if (!(e.target.file.files[0])) { alert('File empty.'); return; }
+        console.log(e.target.file.files[0])
+        let ass = user;
+        const avatarFile = e.target.file.files[0];
+        const extenstion = avatarFile.name.split('.').pop();
+        const filepath = `${user.id}.${extenstion}`;
+
+        const { data, error } = await supabase.storage
+            .from('avatars')
+            .upload(filepath, avatarFile, {
+                upsert: true
+            })
+
+        if (error) { console.error(error); return; }
+        else console.log(data)
+
+        const { publicURL, urlError } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(filepath)
+        console.log({ publicURL, error })
+        if (urlError) { console.error(urlError); return; }
+        else console.log(publicURL)
+
+        let avatar_url = publicURL;
+
+        const { userData, userError } = await update({ avatar_url })
+        console.log({ userData, userError })
+        console.log({ user })
+
+    }
+
+
+
     function useInput({ type /*...*/ }) {
         const [value, setValue] = useState("");
         const input = <input value={value} onChange={e => setValue(e.target.value)} type={type} />;
@@ -204,22 +252,18 @@ export function SupabaseFeatures() {
                 <br />
             </form>
 
-            <h2>Add Message:</h2>
+            <h2>Messages</h2>
             <form onSubmit={handleMessageSubmit}>
                 <div style={{ display: 'flex' }}>
                     <div>
-                        <label htmlFor="input-message">Message</label>
+                        <label htmlFor="input-message">New Message</label>
                         <input id="input-message" type="text" ref={newMessageRef} style={{ width: '600px' }} autoComplete="none" />
                     </div>
                 </div>
 
-                <br />
-
-                <button type="submit">New Message</button>
+                <button type="submit">Submit New Message</button>
                 <br />
             </form>
-
-            <h2>Messages</h2>
             <div style={{ display: 'flex', flexDirection: 'column', borderColor: '#2196F3', borderLeft: '6px solid #ccc', backgroundColor: '#ddffff', gap: '10px', padding: '10px' }}>
                 {
                     Object.entries(messages).map(([idx, value]) => (
@@ -260,7 +304,15 @@ export function SupabaseFeatures() {
 
             </div>
 
+            <h2>Files</h2>
+            <form onSubmit={handlAvatarSubmit}>
+                <input type="file" name="file" />
+                <div>
+                    <button type="submit">Upload Avatar</button>
+                </div>
+            </form>
         </>
     )
 
 }
+
